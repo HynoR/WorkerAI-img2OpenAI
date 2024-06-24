@@ -14,7 +14,7 @@ export default {
     const url_r = new URL(req.url);
     if (url_r.pathname === '/v1/img' && req.method === 'GET') {
       const get_img_key = url_r.searchParams.get('key');
-      const object = await env.MY_BUCKET.get(get_img_key);
+      const object = await env.R2.get(get_img_key);
 
       if (object === null) {
         return new Response('Object Not Found', { status: 404 });
@@ -49,14 +49,14 @@ export default {
     }
 
     // 提取特定字段
-    const model = bodyJson.model
+    let model = bodyJson.model
     const prompt_ai = bodyJson.prompt
     const n = bodyJson.n
     // const size = bodyJson.size
     //console.log(bodyJson)
 
     if (!availableModels.includes(model)) {
-      return new Response('Invalid model', { status: 400 })
+      model = "@cf/stabilityai/stable-diffusion-xl-base-1.0"
     }
 
     if (prompt_ai.length < 1) {
@@ -100,4 +100,5 @@ async function getMD5(string) {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
+
 
